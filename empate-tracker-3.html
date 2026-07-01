@@ -1,268 +1,393 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>⚽ Empate Tracker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#0d1117;font-family:monospace;color:#e6edf3;min-height:100vh;padding-bottom:40px}
-    input,select,button{font-family:monospace}
-    .header{background:#161b22;border-bottom:1px solid #21262d;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-    .nav-btn{padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid #21262d;background:transparent;color:#8b949e;transition:all .15s}
-    .nav-btn.active{border-color:#58a6ff;background:#58a6ff18;color:#58a6ff}
-    .container{max-width:900px;margin:0 auto;padding:16px 14px 0}
-    .card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:14px 16px;margin-bottom:10px}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px}
-    label{font-size:11px;color:#8b949e;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;display:block}
-    input[type=text],input[type=number],input[type=date]{background:#0d1117;border:1px solid #21262d;border-radius:8px;color:#e6edf3;padding:8px 10px;font-size:13px;width:100%;outline:none}
-    .btn{padding:10px 0;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:14px}
-    .btn-primary{background:#58a6ff;color:#0d1117}
-    .btn-gold{background:#f5c542;color:#0d1117}
-    .section-title{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 8px}
-    .bet-card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:14px 16px;margin-bottom:8px}
-    .pill{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;margin:3px}
-    .pill-ok{background:#00e67615;border:1px solid #00e67644;color:#00e676}
-    .pill-fail{background:#ff444415;border:1px solid #ff444444;color:#ff4444}
-    .modal-bg{position:fixed;inset:0;background:#000000bb;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
-    .modal{background:#161b22;border:1px solid #21262d;border-radius:16px;padding:24px;width:100%;max-width:380px}
-    .bar{height:6px;border-radius:99px;background:#21262d;overflow:hidden;display:flex}
-    table{width:100%;border-collapse:collapse;font-size:11px}
-    th{color:#8b949e;font-weight:400;padding-bottom:8px;font-size:10px;border-bottom:1px solid #21262d;text-align:center}
-    th:first-child{text-align:left}
-    td{padding:8px 4px;text-align:center;font-size:11px}
-    td:first-child{text-align:left;font-weight:600;color:#e6edf3}
-    .form-card{background:#161b22;border-radius:14px;padding:20px 16px}
-    .kpi{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:12px 16px}
-    .kpi-label{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-    .kpi-value{font-size:20px;font-weight:700}
-    .score-box{display:flex;align-items:center;gap:12px;background:#0d1117;border-radius:10px;padding:12px 14px;border:1px solid #21262d}
-    .score-input{font-size:26px;font-weight:700;text-align:center;padding:6px 0;border:none;background:transparent;color:#e6edf3;width:100%;outline:none}
-    .tag{border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
-    .edit-btn{border-radius:6px;cursor:pointer;font-size:11px;padding:4px 8px;font-weight:700}
-    .del-btn{background:transparent;border:1px solid #21262d;border-radius:6px;color:#8b949e;cursor:pointer;font-size:11px;padding:4px 7px}
-    .goles-box{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:10px 12px}
-    .goles-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:4px}
-    .range-banner{margin-top:8px;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700}
-    .hidden{display:none}
-    .chart-container{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:10px}
-    .tab-row{display:flex;gap:6px;margin-bottom:14px}
-    .tab-btn{padding:5px 12px;border-radius:6px;border:1px solid #21262d;background:transparent;color:#8b949e;font-size:11px;cursor:pointer}
-    .tab-btn.active{border-color:#58a6ff;background:#58a6ff18;color:#58a6ff}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>⚽ Empate Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080c14;--surface:#0f1623;--card:#141d2e;--border:#1e2d45;
+  --text:#e8f0fe;--muted:#4a6080;--accent:#58a6ff;
+  --green:#00e676;--red:#ff4444;--gold:#f5c542;
+  --green-bg:#00e67612;--red-bg:#ff444412;--gold-bg:#f5c54212;
+}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);min-height:100vh;padding-bottom:80px}
+input,select,button,textarea{font-family:inherit}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 8px;cursor:pointer;gap:3px;border:none;background:transparent;color:var(--muted);font-size:9px;letter-spacing:.05em;text-transform:uppercase;transition:color .15s}
+.nav-item.active{color:var(--accent)}
+.nav-icon{font-size:18px;line-height:1}
+.container{max-width:900px;margin:0 auto;padding:14px 14px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+.card-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi-value{font-size:20px;font-weight:700;letter-spacing:-.02em}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+label{font-size:11px;color:var(--muted);margin-bottom:4px;display:block;letter-spacing:.05em;text-transform:uppercase}
+input[type=text],input[type=number],input[type=date],input[type=time],select{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  color:var(--text);padding:9px 12px;font-size:13px;width:100%;outline:none;transition:border-color .15s
+}
+input:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--card)}
+.btn{padding:12px 0;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:12px;transition:all .15s}
+.btn-primary{background:var(--accent);color:#0d1117}
+.btn-gold{background:var(--gold);color:#0d1117}
+.btn-sm{padding:6px 12px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;width:auto}
+.section-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;margin:2px}
+.pill-ok{background:var(--green-bg);border:1px solid #00e67630;color:var(--green)}
+.pill-fail{background:var(--red-bg);border:1px solid #ff444430;color:var(--red)}
+.score-box{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:12px;padding:12px 14px;border:1px solid var(--border)}
+.score-input{font-size:28px;font-weight:700;text-align:center;border:none;background:transparent;color:var(--text);width:100%;outline:none}
+.bet-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;border-left:3px solid var(--border)}
+.edit-btn{border-radius:8px;cursor:pointer;font-size:11px;padding:5px 9px;font-weight:700;border:1px solid #58a6ff44;background:#58a6ff18;color:var(--accent)}
+.del-btn{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:11px;padding:5px 8px}
+.modal-bg{position:fixed;inset:0;background:#000000cc;z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 16px 36px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 16px}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:14px}
+.bank-card-wrap{background:linear-gradient(135deg,#0d1f3c,#0a1628);border:1px solid #1e3a5f;border-radius:16px;padding:14px;margin-bottom:10px}
+.bank-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.bank-btn{padding:7px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:11px;font-weight:600;cursor:pointer}
+.dist-bar{height:6px;border-radius:99px;background:var(--border);overflow:hidden;display:flex;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{color:var(--muted);font-weight:500;padding-bottom:6px;font-size:10px;border-bottom:1px solid var(--border);text-align:center}
+th:first-child{text-align:left}
+td{padding:7px 3px;text-align:center;font-size:11px}
+td:first-child{text-align:left;font-weight:600}
+tr:not(:last-child) td{border-bottom:1px solid var(--border)11}
+.tag{border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700}
+.hidden{display:none}
+.checkbox-wrap{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer}
+.checkbox-wrap input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.forma-result{background:var(--surface);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:14px;margin-top:8px;border-left:3px solid var(--border)}
+.goles-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.goles-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:4px}
+.range-banner{border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;margin-top:8px}
+.mercado-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:6px}
+.mercado-row input{flex:1}
+.mercado-row button{padding:9px 12px;border-radius:10px;border:1px solid var(--red);background:var(--red-bg);color:var(--red);font-size:12px;cursor:pointer;white-space:nowrap}
+.add-mercado-btn{padding:8px 14px;border-radius:10px;border:1px dashed var(--accent);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;width:100%;margin-top:6px}
+.hist-detail{font-size:10px;color:var(--muted);margin-top:8px;background:var(--surface);border-radius:8px;padding:8px 10px}
+.hist-detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.hist-detail-item{display:flex;flex-direction:column;gap:2px}
+.hist-detail-label{font-size:9px;color:var(--muted);text-transform:uppercase}
+.hist-detail-value{font-size:11px;font-weight:600}
+</style>
 </head>
 <body>
 <div class="header">
-  <div>
-    <div style="font-size:15px;font-weight:700">⚽ Empate Tracker</div>
-    <div style="font-size:10px;color:#8b949e;margin-top:1px">registro personal de apuestas</div>
-  </div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap">
-    <button class="nav-btn active" onclick="showView('dashboard')">Stats</button>
-    <button class="nav-btn" onclick="showView('nueva')" id="btn-nueva">+ Nueva</button>
-    <button class="nav-btn" onclick="showView('historial')">Historial</button>
-    <button class="nav-btn" onclick="showView('graficos')">Gráficos</button>
-  </div>
+  <div class="logo">⚽ Empate<span>Tracker</span></div>
+  <div style="font-size:10px;color:var(--muted)" id="header-stats">0 apuestas</div>
 </div>
-
 <div class="container">
+
   <!-- DASHBOARD -->
   <div id="view-dashboard">
-    <div id="bank-banner" class="card" style="border-color:#f5c54244;background:#f5c54215;display:flex;align-items:center;justify-content:space-between">
-      <div><div style="color:#f5c542;font-weight:700;font-size:13px">⚠ Bank no configurado</div><div style="color:#8b949e;font-size:11px;margin-top:2px">Configura tu bank inicial</div></div>
-      <button onclick="openBankModal()" style="background:#f5c542;color:#0d1117;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">Configurar</button>
-    </div>
-    <div id="bank-cards" class="grid2 hidden" style="margin-bottom:8px"></div>
-    <div id="bank-edit-link" class="hidden" style="text-align:right;margin-bottom:10px"><span onclick="openBankModal()" style="font-size:11px;color:#8b949e;cursor:pointer;text-decoration:underline">Editar bank inicial</span></div>
-    <div class="grid2" id="kpi-grid" style="margin-bottom:10px"></div>
-    <div class="card">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Distribución resultados</div>
-      <div style="display:flex;gap:20px;margin-bottom:10px">
-        <div><div id="d-emp" style="font-size:20px;font-weight:700;color:#00e676">0</div><div style="font-size:10px;color:#8b949e;margin-top:2px">Empates ✅</div></div>
-        <div><div id="d-noemp" style="font-size:20px;font-weight:700;color:#ff4444">0</div><div style="font-size:10px;color:#8b949e;margin-top:2px">No empate ❌</div></div>
-        <div><div id="d-pend" style="font-size:20px;font-weight:700;color:#f5c542">0</div><div style="font-size:10px;color:#8b949e;margin-top:2px">Pendientes ⏳</div></div>
+    <div id="no-banks-banner" class="card" style="border-color:#f5c54244;background:#f5c54212">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><div style="color:var(--gold);font-weight:700;font-size:13px">⚠ Sin bankrolls</div><div style="color:var(--muted);font-size:11px;margin-top:2px">Crea tu primer bankroll</div></div>
+        <button onclick="openBankModal('create')" style="background:var(--gold);color:#0d1117;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">Crear</button>
       </div>
-      <div class="bar"><div id="bar-emp" style="background:#00e676"></div><div id="bar-noemp" style="background:#ff4444"></div><div id="bar-pend" style="background:#f5c542"></div></div>
     </div>
-    <div class="card hidden" id="liga-card">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Rendimiento por liga</div>
-      <div style="overflow-x:auto"><table><thead><tr><th style="text-align:left">Liga</th><th>Tot</th><th>✅</th><th>❌</th><th>⏳</th><th>%</th><th>ROI(u)</th><th>ROI(COP)</th></tr></thead><tbody id="liga-tbody"></tbody></table></div>
+    <div id="banks-wrap"></div>
+    <button onclick="openBankModal('create')" id="add-bank-btn" class="hidden" style="background:transparent;border:1px dashed var(--accent);color:var(--accent);border-radius:12px;padding:10px;font-size:12px;cursor:pointer;width:100%;margin-bottom:10px">+ Agregar bankroll</button>
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="card">
+      <div class="card-title">Distribución global</div>
+      <div style="display:flex;gap:20px;margin-bottom:8px">
+        <div><div id="d-emp" style="font-size:22px;font-weight:700;color:var(--green)">0</div><div style="font-size:10px;color:var(--muted)">Empates ✅</div></div>
+        <div><div id="d-noemp" style="font-size:22px;font-weight:700;color:var(--red)">0</div><div style="font-size:10px;color:var(--muted)">No empate ❌</div></div>
+        <div><div id="d-pend" style="font-size:22px;font-weight:700;color:var(--gold)">0</div><div style="font-size:10px;color:var(--muted)">Pendientes ⏳</div></div>
+      </div>
+      <div class="dist-bar"><div id="bar-emp" style="background:var(--green)"></div><div id="bar-noemp" style="background:var(--red)"></div><div id="bar-pend" style="background:var(--gold)"></div></div>
     </div>
-    <div class="card hidden" id="equipo-card">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Rendimiento por equipo</div>
-      <div style="overflow-x:auto"><table><thead><tr><th style="text-align:left">Equipo</th><th>Tot</th><th>✅</th><th>❌</th><th>⏳</th><th>%</th><th>ROI(u)</th></tr></thead><tbody id="equipo-tbody"></tbody></table></div>
-    </div>
-    <div id="empty-msg" style="text-align:center;color:#8b949e;font-size:13px;padding:40px 0">Sin apuestas aún. <span onclick="showView('nueva')" style="color:#58a6ff;cursor:pointer;text-decoration:underline">Registrar primera →</span></div>
+    <div id="liga-card" class="card hidden"><div class="card-title">Por liga</div><div style="overflow-x:auto"><table><thead><tr><th>Liga</th><th>Tot</th><th>✅</th><th>❌</th><th>%</th><th>ROI(u)</th></tr></thead><tbody id="liga-tbody"></tbody></table></div></div>
+    <div id="equipo-card" class="card hidden"><div class="card-title">Por equipo</div><div style="overflow-x:auto"><table><thead><tr><th>Equipo</th><th>Tot</th><th>✅</th><th>❌</th><th>%</th><th>ROI(u)</th></tr></thead><tbody id="equipo-tbody"></tbody></table></div></div>
+    <div id="empty-msg" style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0">Sin apuestas. <span onclick="showView('nueva')" style="color:var(--accent);cursor:pointer">Registrar →</span></div>
   </div>
 
   <!-- NUEVA -->
   <div id="view-nueva" class="hidden">
-    <div class="form-card" id="form-wrapper" style="border:1px solid #21262d">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div id="form-title" style="font-size:14px;font-weight:700;color:#58a6ff">Nueva apuesta</div>
+    <div class="card" id="form-wrapper">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div id="form-title" style="font-size:15px;font-weight:700;color:var(--accent)">Nueva apuesta</div>
         <button id="cancel-edit-btn" class="hidden del-btn" onclick="cancelEdit()">Cancelar</button>
       </div>
       <div class="grid2">
         <div><label>Fecha</label><input type="date" id="f-fecha"/></div>
+        <div><label>Hora</label><input type="time" id="f-hora"/></div>
         <div><label>Liga</label><input type="text" id="f-liga" placeholder="Ej: Botola 2"/></div>
-        <div><label>Equipo local</label><input type="text" id="f-local" placeholder="Ej: RAC Casablanca" oninput="updateLabels()"/></div>
-        <div><label>Equipo visitante</label><input type="text" id="f-visitante" placeholder="Ej: Chabab Benguerir" oninput="updateLabels()"/></div>
-        <div><label>Cuota empate</label><input type="number" step="0.01" id="f-cuotaEmpate" placeholder="Ej: 3.20"/></div>
-        <div><label>Cuota menos 2.5</label><input type="number" step="0.01" id="f-cuotaMenos25" placeholder="Ej: 1.45"/></div>
-        <div><label>Monto (COP)</label><input type="number" id="f-montoCOP" placeholder="Ej: 20000"/></div>
         <div><label>Unidades</label><input type="number" step="0.5" id="f-unidades" value="1"/></div>
+        <div><label>Local</label><input type="text" id="f-local" placeholder="Equipo local" oninput="updateLabels()"/></div>
+        <div><label>Visitante</label><input type="text" id="f-visitante" placeholder="Equipo visitante" oninput="updateLabels()"/></div>
       </div>
+
+      <div class="section-title">Mercados y cuotas</div>
+      <div id="mercados-wrap"></div>
+      <button class="add-mercado-btn" onclick="addMercado()">+ Agregar mercado</button>
+
+      <div style="margin-top:8px"><label>Monto total (COP)</label><input type="number" id="f-montoCOP" placeholder="Ej: 20000"/></div>
+
+      <div class="section-title">Bankrolls</div>
+      <div id="banks-select-wrap" style="margin-bottom:4px"></div>
+
       <div class="section-title">Forma</div>
       <div class="grid2">
-        <div><label id="lbl-forma-local">Forma Local</label><input type="number" step="0.01" id="f-formaLocal" placeholder="Ej: 1.85" oninput="calcForma()"/></div>
-        <div><label id="lbl-forma-visit">Forma Visitante</label><input type="number" step="0.01" id="f-formaVisitante" placeholder="Ej: 1.40" oninput="calcForma()"/></div>
+        <div><label id="lbl-forma-local">Forma Local</label><input type="number" step="0.01" id="f-formaLocal" placeholder="1.85" oninput="calcForma()"/></div>
+        <div><label id="lbl-forma-visit">Forma Visitante</label><input type="number" step="0.01" id="f-formaVisitante" placeholder="1.40" oninput="calcForma()"/></div>
       </div>
-      <div id="forma-result" class="hidden" style="margin-top:8px;background:#0d1117;border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:14px">
-        <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em">Dif. forma</div><div id="forma-val" style="font-size:20px;font-weight:700;margin-top:2px"></div></div>
+      <div id="forma-result" class="hidden forma-result">
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Dif. forma</div><div id="forma-val" style="font-size:22px;font-weight:700;margin-top:2px"></div></div>
         <div id="forma-msg" style="font-size:11px"></div>
       </div>
+
       <div class="section-title">Goles promedio</div>
       <div class="grid2">
         <div>
-          <div id="lbl-goles-local" style="font-size:11px;color:#58a6ff;font-weight:700;margin-bottom:6px">Local</div>
-          <div style="margin-bottom:8px"><label>A favor (prom.)</label><input type="number" step="0.01" id="f-afLocal" placeholder="Ej: 1.20" oninput="calcGoles()"/></div>
-          <div><label>En contra (prom.)</label><input type="number" step="0.01" id="f-ecLocal" placeholder="Ej: 0.90" oninput="calcGoles()"/></div>
+          <div id="lbl-goles-local" style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:6px">Local</div>
+          <div style="margin-bottom:8px"><label>A favor</label><input type="number" step="0.01" id="f-afLocal" placeholder="1.00" oninput="calcGoles()"/></div>
+          <div><label>En contra</label><input type="number" step="0.01" id="f-ecLocal" placeholder="0.80" oninput="calcGoles()"/></div>
         </div>
         <div>
-          <div id="lbl-goles-visit" style="font-size:11px;color:#58a6ff;font-weight:700;margin-bottom:6px">Visitante</div>
-          <div style="margin-bottom:8px"><label>A favor (prom.)</label><input type="number" step="0.01" id="f-afVisit" placeholder="Ej: 0.95" oninput="calcGoles()"/></div>
-          <div><label>En contra (prom.)</label><input type="number" step="0.01" id="f-ecVisit" placeholder="Ej: 1.10" oninput="calcGoles()"/></div>
+          <div id="lbl-goles-visit" style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:6px">Visitante</div>
+          <div style="margin-bottom:8px"><label>A favor</label><input type="number" step="0.01" id="f-afVisit" placeholder="0.90" oninput="calcGoles()"/></div>
+          <div><label>En contra</label><input type="number" step="0.01" id="f-ecVisit" placeholder="1.10" oninput="calcGoles()"/></div>
         </div>
       </div>
-      <div id="goles-summary" class="hidden" style="margin-top:10px;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:12px 14px">
-        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Resumen de goles</div>
-        <div class="grid2" style="margin-bottom:12px">
+      <div id="goles-summary" class="hidden" style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+        <div class="grid2" style="margin-bottom:10px">
           <div class="goles-box" id="goles-local-box"></div>
           <div class="goles-box" id="goles-visit-box"></div>
         </div>
-        <div id="indicadores-wrap" class="hidden" style="border-top:1px solid #21262d;padding-top:10px">
-          <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Indicadores de rango</div>
+        <div id="indicadores-wrap" class="hidden" style="border-top:1px solid var(--border);padding-top:10px">
           <div id="pills-wrap"></div>
-          <div id="range-banner"></div>
+          <div id="range-banner-wrap"></div>
         </div>
       </div>
+
       <div class="section-title">Marcador final</div>
       <div class="score-box" id="score-box">
-        <div style="flex:1"><div id="lbl-score-local" style="font-size:10px;color:#8b949e;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Local</div><input class="score-input" type="number" min="0" id="f-marcLocal" placeholder="0" oninput="calcResultado()"/></div>
-        <div style="font-size:18px;color:#8b949e;font-weight:700">—</div>
-        <div style="flex:1"><div id="lbl-score-visit" style="font-size:10px;color:#8b949e;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Visitante</div><input class="score-input" type="number" min="0" id="f-marcVisit" placeholder="0" oninput="calcResultado()"/></div>
-        <div id="resultado-pill" class="hidden" style="padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap"></div>
+        <div style="flex:1"><div id="lbl-score-local" style="font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase">Local</div><input class="score-input" type="number" min="0" id="f-marcLocal" placeholder="–" oninput="calcResultado()"/></div>
+        <div style="font-size:20px;color:var(--muted);font-weight:300">—</div>
+        <div style="flex:1"><div id="lbl-score-visit" style="font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase">Visitante</div><input class="score-input" type="number" min="0" id="f-marcVisit" placeholder="–" oninput="calcResultado()"/></div>
+        <div id="resultado-pill" class="hidden" style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap"></div>
       </div>
-      <div style="font-size:10px;color:#8b949e;margin-top:5px">Deja vacío si es pendiente.</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">Deja vacío si es pendiente.</div>
       <button class="btn btn-primary" id="submit-btn" onclick="handleSubmit()">Guardar apuesta</button>
     </div>
   </div>
 
   <!-- HISTORIAL -->
   <div id="view-historial" class="hidden">
-    <div id="hist-count" style="font-size:12px;color:#8b949e;margin-bottom:12px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div id="hist-count" style="font-size:12px;color:var(--muted)"></div>
+      <select id="hist-filter-bank" onchange="renderHistorial()" style="width:auto;padding:6px 10px;font-size:11px">
+        <option value="">Todos los banks</option>
+      </select>
+    </div>
     <div id="hist-list"></div>
-    <div id="hist-empty" class="hidden" style="text-align:center;color:#8b949e;font-size:13px;padding:40px 0">Sin registros aún.</div>
+    <div id="hist-empty" class="hidden" style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0">Sin registros.</div>
   </div>
 
-  <!-- GRÁFICOS -->
-  <div id="view-graficos" class="hidden">
-    <div class="tab-row">
-      <button class="tab-btn active" onclick="setChartPeriod('diario')">Diario</button>
-      <button class="tab-btn" onclick="setChartPeriod('semanal')">Semanal</button>
-      <button class="tab-btn" onclick="setChartPeriod('mensual')">Mensual</button>
-      <button class="tab-btn" onclick="setChartPeriod('anual')">Anual</button>
-    </div>
-    <div class="chart-container">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">ROI acumulado (unidades)</div>
-      <canvas id="chart-roi" height="180"></canvas>
-    </div>
-    <div class="chart-container">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Aciertos vs Fallos</div>
-      <canvas id="chart-results" height="180"></canvas>
-    </div>
-    <div id="no-data-msg" class="hidden" style="text-align:center;color:#8b949e;font-size:13px;padding:40px 0">Sin datos suficientes para graficar.</div>
+  <!-- BANKS -->
+  <div id="view-banks" class="hidden">
+    <div id="banks-detail-wrap"></div>
+    <button onclick="openBankModal('create')" style="background:transparent;border:1px dashed var(--accent);color:var(--accent);border-radius:12px;padding:12px;font-size:13px;cursor:pointer;width:100%">+ Nuevo bankroll</button>
   </div>
 </div>
 
-<!-- BANK MODAL -->
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="showView('dashboard')"><span class="nav-icon">📊</span>Stats</button>
+  <button class="nav-item" onclick="showView('banks')"><span class="nav-icon">💰</span>Banks</button>
+  <button class="nav-item" onclick="showView('nueva');if(!editingId)resetForm()"><span class="nav-icon">➕</span>Nueva</button>
+  <button class="nav-item" onclick="showView('historial')"><span class="nav-icon">📋</span>Historial</button>
+</div>
+
+<!-- MODALS -->
 <div class="modal-bg hidden" id="bank-modal">
   <div class="modal">
-    <div style="font-size:14px;font-weight:700;color:#58a6ff;margin-bottom:16px">Configurar Bank Inicial</div>
-    <div style="margin-bottom:12px"><label>Bank en COP ($)</label><input type="number" id="m-bankCOP" placeholder="Ej: 500000" style="background:#0d1117;border:1px solid #21262d;border-radius:8px;color:#e6edf3;padding:8px 12px;font-size:13px;width:100%;outline:none"/></div>
-    <div style="margin-bottom:18px"><label>Bank en unidades</label><input type="number" id="m-bankU" placeholder="Ej: 50" style="background:#0d1117;border:1px solid #21262d;border-radius:8px;color:#e6edf3;padding:8px 12px;font-size:13px;width:100%;outline:none"/></div>
-    <div style="display:flex;gap:10px">
-      <button onclick="closeBankModal()" style="flex:1;padding:9px 0;border-radius:8px;border:1px solid #21262d;background:transparent;color:#8b949e;font-size:12px;cursor:pointer">Cancelar</button>
-      <button onclick="saveBank()" style="flex:2;padding:9px 0;border-radius:8px;border:none;background:#58a6ff;color:#0d1117;font-size:12px;font-weight:700;cursor:pointer">Guardar</button>
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="bank-modal-title">Nuevo Bankroll</div>
+    <div id="bank-modal-body"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="closeBankModal()" style="flex:1;padding:12px 0;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="saveBankModal()" style="flex:2;padding:12px 0;border-radius:12px;border:none;background:var(--accent);color:#0d1117;font-size:13px;font-weight:700;cursor:pointer">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="mov-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="mov-modal-title">Movimiento</div>
+    <div id="mov-modal-body"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="closeMovModal()" style="flex:1;padding:12px 0;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="saveMovModal()" style="flex:2;padding:12px 0;border-radius:12px;border:none;background:var(--accent);color:#0d1117;font-size:13px;font-weight:700;cursor:pointer">Guardar</button>
     </div>
   </div>
 </div>
 
 <script>
-const BETS_KEY="et_bets_v1", CONF_KEY="et_conf_v1";
-let bets=[], config={bankCOP:0,bankU:0,configured:false}, editingId=null;
-let chartPeriod="diario", roiChart=null, resultsChart=null;
+const BETS_KEY="et_bets_v3",BANKS_KEY="et_banks_v3";
+const CASAS_CO=["Wplay","Betplay","Rushbet","Luckia","Yajuego","Zamba","Rivalo","Bwin","Betsson","Codere","Topacio","Betano","Stake","1xBet","Bet365","Sportium","Otra"];
+const MERCADOS_PRESET=["Empate","BTTS No","Empate 1er tiempo","Menos 2.5","Menos 1.5","BTTS Sí","Más 2.5","Handicap","Ganador local","Ganador visitante"];
+
+let bets=[],banks=[],editingId=null,bankModalMode="create",bankModalId=null,movModalBankId=null,movModalType=null;
 
 function load(){
   try{const b=localStorage.getItem(BETS_KEY);if(b)bets=JSON.parse(b);}catch{}
-  try{const c=localStorage.getItem(CONF_KEY);if(c)config=JSON.parse(c);}catch{}
+  try{const b=localStorage.getItem(BANKS_KEY);if(b)banks=JSON.parse(b);}catch{}
 }
-function save(){try{localStorage.setItem(BETS_KEY,JSON.stringify(bets));}catch{}}
-function saveConf(){try{localStorage.setItem(CONF_KEY,JSON.stringify(config));}catch{}}
-function formatCOP(n){return new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n);}
+function saveBets(){try{localStorage.setItem(BETS_KEY,JSON.stringify(bets));}catch{}}
+function saveBanks(){try{localStorage.setItem(BANKS_KEY,JSON.stringify(banks));}catch{}}
+function fCOP(n){return new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n);}
 function fmt(n,d=2){return isNaN(parseFloat(n))?"-":parseFloat(n).toFixed(d);}
 function toF(v){return parseFloat(v);}
 function validN(v){return v!==""&&v!==null&&v!==undefined&&!isNaN(toF(v));}
+function uid(){return Date.now()+Math.random().toString(36).slice(2,6);}
 
 function gananciaU(bet){
-  const u=toF(bet.unidades)||1,c=toF(bet.cuotaEmpate)||0;
-  if(bet.resultado==="Empate") return +(u*(c-1)).toFixed(2);
-  if(bet.resultado==="No empate") return -u;
+  const u=toF(bet.unidades)||1;
+  const mainMercado=bet.mercados&&bet.mercados[0];
+  const c=mainMercado?toF(mainMercado.cuota):toF(bet.cuotaEmpate)||0;
+  if(bet.resultado==="Empate")return+(u*(c-1)).toFixed(2);
+  if(bet.resultado==="No empate")return-u;
   return 0;
 }
 function gananciaCOP(bet){
-  const m=toF(bet.montoCOP)||0,c=toF(bet.cuotaEmpate)||0;
-  if(bet.resultado==="Empate") return +(m*(c-1));
-  if(bet.resultado==="No empate") return -m;
+  const m=toF(bet.montoCOP)||0;
+  const mainMercado=bet.mercados&&bet.mercados[0];
+  const c=mainMercado?toF(mainMercado.cuota):toF(bet.cuotaEmpate)||0;
+  if(bet.resultado==="Empate")return+(m*(c-1));
+  if(bet.resultado==="No empate")return-m;
   return 0;
 }
 function detectRes(ml,mv){
-  if(!validN(ml)||!validN(mv)) return "Pendiente";
+  if(!validN(ml)||!validN(mv))return"Pendiente";
   return parseInt(ml)===parseInt(mv)?"Empate":"No empate";
 }
 
+function bankROI(bank){
+  const betsBanco=bets.filter(b=>b.bankIds&&b.bankIds.includes(bank.id));
+  return betsBanco.reduce((a,b)=>a+gananciaCOP(b),0);
+}
+function bankActual(bank){
+  const movs=(bank.movimientos||[]).reduce((a,m)=>a+(m.tipo==="recarga"?m.monto:-m.monto),0);
+  return(bank.initialCOP||0)+bankROI(bank)+movs;
+}
+function bankSubActual(bank,casa){
+  const sub=bank.casas&&bank.casas.find(c=>c.nombre===casa);
+  if(!sub)return 0;
+  const movs=(sub.movimientos||[]).reduce((a,m)=>a+(m.tipo==="recarga"?m.monto:-m.monto),0);
+  return(sub.initialCOP||0)+movs;
+}
+
 function showView(v){
-  ["dashboard","nueva","historial","graficos"].forEach(x=>{
+  ["dashboard","nueva","historial","banks"].forEach(x=>{
     document.getElementById("view-"+x).classList.toggle("hidden",x!==v);
   });
-  document.querySelectorAll(".nav-btn").forEach((b,i)=>{
-    b.classList.toggle("active",["dashboard","nueva","historial","graficos"][i]===v);
+  document.querySelectorAll(".nav-item").forEach((b,i)=>{
+    b.classList.toggle("active",["dashboard","banks","nueva","historial"][i]===v);
   });
-  if(v==="nueva"&&!editingId) resetForm();
-  if(v==="dashboard") renderDashboard();
-  if(v==="historial") renderHistorial();
-  if(v==="graficos") renderGraficos();
+  if(v==="dashboard")renderDashboard();
+  if(v==="historial")renderHistorial();
+  if(v==="banks")renderBanksDetail();
+}
+
+// MERCADOS
+function addMercado(data){
+  const wrap=document.getElementById("mercados-wrap");
+  const idx=wrap.children.length;
+  const div=document.createElement("div");
+  div.className="mercado-row";
+  div.innerHTML=`
+    <div style="flex:2">
+      ${idx===0?'<label>Mercado principal</label>':'<label>Mercado '+(idx+1)+'</label>'}
+      <select onchange="syncMercadoName(this,${idx})">
+        ${MERCADOS_PRESET.map(m=>`<option value="${m}" ${data&&data.nombre===m?'selected':''}>${m}</option>`).join('')}
+        <option value="__custom__" ${data&&!MERCADOS_PRESET.includes(data.nombre)?'selected':''}>Personalizado...</option>
+      </select>
+      <input type="text" placeholder="Nombre mercado" style="margin-top:4px;display:${data&&!MERCADOS_PRESET.includes(data.nombre)&&data.nombre?'block':'none'}" id="mercado-custom-${idx}" value="${data&&!MERCADOS_PRESET.includes(data.nombre)?data.nombre:''}"/>
+    </div>
+    <div style="flex:1">
+      <label>Cuota</label>
+      <input type="number" step="0.01" placeholder="2.50" value="${data?data.cuota:''}" id="mercado-cuota-${idx}"/>
+    </div>
+    ${idx>0?`<button onclick="this.parentElement.remove();renumberMercados()">✕</button>`:'<div style="width:32px"></div>'}
+  `;
+  wrap.appendChild(div);
+}
+function syncMercadoName(sel,idx){
+  const customInput=document.getElementById("mercado-custom-"+idx);
+  if(sel.value==="__custom__")customInput.style.display="block";
+  else customInput.style.display="none";
+}
+function renumberMercados(){
+  document.querySelectorAll(".mercado-row").forEach((div,i)=>{
+    const lbl=div.querySelector("label");
+    if(lbl)lbl.textContent=i===0?"Mercado principal":"Mercado "+(i+1);
+  });
+}
+function getMercados(){
+  const rows=document.querySelectorAll(".mercado-row");
+  const result=[];
+  rows.forEach((row,i)=>{
+    const sel=row.querySelector("select");
+    const customInput=document.getElementById("mercado-custom-"+i);
+    const cuotaInput=document.getElementById("mercado-cuota-"+i);
+    const nombre=sel&&sel.value==="__custom__"?(customInput?customInput.value:""):sel?sel.value:"";
+    const cuota=cuotaInput?cuotaInput.value:"";
+    if(nombre)result.push({nombre,cuota});
+  });
+  return result;
+}
+
+// BANK SELECTION
+function renderBankSelect(){
+  const wrap=document.getElementById("banks-select-wrap");
+  if(banks.length===0){wrap.innerHTML='<div style="font-size:11px;color:var(--muted)">No hay bankrolls creados.</div>';return;}
+  wrap.innerHTML=banks.map(b=>`
+    <label class="checkbox-wrap">
+      <input type="checkbox" name="banksel" value="${b.id}" ${editingId&&bets.find(x=>x.id===editingId)&&bets.find(x=>x.id===editingId).bankIds&&bets.find(x=>x.id===editingId).bankIds.includes(b.id)?'checked':''}>
+      <span style="font-size:12px;font-weight:600">${b.nombre}</span>
+      <span style="font-size:11px;color:var(--muted);margin-left:auto">${fCOP(bankActual(b))}</span>
+    </label>
+  `).join('');
 }
 
 function resetForm(){
   const today=new Date().toISOString().split("T")[0];
+  const now=new Date().toTimeString().slice(0,5);
   document.getElementById("f-fecha").value=today;
-  ["f-liga","f-local","f-visitante","f-cuotaEmpate","f-cuotaMenos25","f-montoCOP",
+  document.getElementById("f-hora").value=now;
+  ["f-liga","f-local","f-visitante","f-montoCOP",
    "f-formaLocal","f-formaVisitante","f-afLocal","f-ecLocal","f-afVisit","f-ecVisit",
-   "f-marcLocal","f-marcVisit"].forEach(id=>{document.getElementById(id).value="";});
+   "f-marcLocal","f-marcVisit"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
   document.getElementById("f-unidades").value="1";
+  document.getElementById("mercados-wrap").innerHTML="";
+  addMercado();
   document.getElementById("forma-result").classList.add("hidden");
   document.getElementById("goles-summary").classList.add("hidden");
   document.getElementById("resultado-pill").classList.add("hidden");
-  document.getElementById("score-box").style.borderColor="#21262d";
+  document.getElementById("score-box").style.borderColor="var(--border)";
   document.getElementById("form-title").textContent="Nueva apuesta";
-  document.getElementById("form-title").style.color="#58a6ff";
-  document.getElementById("form-wrapper").style.borderColor="#21262d";
+  document.getElementById("form-title").style.color="var(--accent)";
+  document.getElementById("form-wrapper").style.borderColor="var(--border)";
   document.getElementById("cancel-edit-btn").classList.add("hidden");
   document.getElementById("submit-btn").textContent="Guardar apuesta";
-  document.getElementById("submit-btn").style.background="#58a6ff";
+  document.getElementById("submit-btn").style.background="var(--accent)";
+  renderBankSelect();
   updateLabels();
 }
 
@@ -284,30 +409,26 @@ function calcForma(){
   if(isNaN(a)||isNaN(b)){box.classList.add("hidden");return;}
   const dif=Math.abs(a-b),ok=dif<=0.5;
   box.classList.remove("hidden");
-  box.style.borderColor=ok?"#00e67655":"#ff444455";
+  box.style.borderLeftColor=ok?"var(--green)":"var(--red)";
   document.getElementById("forma-val").textContent=fmt(dif);
-  document.getElementById("forma-val").style.color=ok?"#00e676":"#ff4444";
-  document.getElementById("forma-msg").textContent=ok?"✅ Dentro del rango":"⚠ Fuera del rango (>0.50)";
-  document.getElementById("forma-msg").style.color=ok?"#00e676":"#ff4444";
+  document.getElementById("forma-val").style.color=ok?"var(--green)":"var(--red)";
+  document.getElementById("forma-msg").textContent=ok?"✅ Dentro del rango":"⚠ Fuera de rango";
+  document.getElementById("forma-msg").style.color=ok?"var(--green)":"var(--red)";
 }
 
 function golesBox(label,af,ec,afOk,ecOk){
-  const total=validN(af)&&validN(ec)?(toF(af)+toF(ec)):null;
   const prom=validN(af)&&validN(ec)?(toF(af)+toF(ec))/2:null;
-  return `<div style="font-size:11px;color:#58a6ff;font-weight:700;margin-bottom:6px">${label}</div>
-    <div class="goles-row"><span style="color:#8b949e">A favor:</span><span style="display:flex;align-items:center;gap:5px"><span style="color:#00e676;font-weight:700">${fmt(toF(af))}</span>${afOk!==null?`<span style="font-size:10px;color:${afOk?"#00e676":"#ff4444"}">${afOk?"✅<1.30":"⚠≥1.30"}</span>`:""}</span></div>
-    <div class="goles-row"><span style="color:#8b949e">En contra:</span><span style="display:flex;align-items:center;gap:5px"><span style="color:#ff4444;font-weight:700">${fmt(toF(ec))}</span>${ecOk!==null?`<span style="font-size:10px;color:${ecOk?"#00e676":"#ff4444"}">${ecOk?"✅<1.40":"⚠≥1.40"}</span>`:""}</span></div>
-    <div style="border-top:1px solid #21262d;padding-top:4px;display:flex;justify-content:space-between;font-size:11px"><span style="color:#8b949e">Total:</span><span style="font-weight:700">${total!==null?fmt(total):"-"}</span></div>
-    <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:#8b949e">Promedio:</span><span style="color:#58a6ff;font-weight:700">${prom!==null?fmt(prom):"-"}</span></div>`;
+  return `<div style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:6px">${label}</div>
+    <div class="goles-row"><span style="color:var(--muted)">A favor:</span><span style="display:flex;align-items:center;gap:4px"><span style="color:var(--green);font-weight:700">${fmt(toF(af))}</span>${afOk!==null?`<span style="font-size:10px;color:${afOk?"var(--green)":"var(--red)"}">${afOk?"✅":"⚠"}</span>`:""}</span></div>
+    <div class="goles-row"><span style="color:var(--muted)">En contra:</span><span style="display:flex;align-items:center;gap:4px"><span style="color:var(--red);font-weight:700">${fmt(toF(ec))}</span>${ecOk!==null?`<span style="font-size:10px;color:${ecOk?"var(--green)":"var(--red)"}">${ecOk?"✅":"⚠"}</span>`:""}</span></div>
+    <div style="border-top:1px solid var(--border);padding-top:4px;display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--muted)">Prom:</span><span style="color:var(--accent);font-weight:700">${prom!==null?fmt(prom):"-"}</span></div>`;
 }
 
 function calcGoles(){
   const afL=document.getElementById("f-afLocal").value,ecL=document.getElementById("f-ecLocal").value;
   const afV=document.getElementById("f-afVisit").value,ecV=document.getElementById("f-ecVisit").value;
-  const anyVal=afL||ecL||afV||ecV;
-  const summary=document.getElementById("goles-summary");
-  if(!anyVal){summary.classList.add("hidden");return;}
-  summary.classList.remove("hidden");
+  if(!(afL||ecL||afV||ecV)){document.getElementById("goles-summary").classList.add("hidden");return;}
+  document.getElementById("goles-summary").classList.remove("hidden");
   const local=document.getElementById("f-local").value||"Local";
   const visit=document.getElementById("f-visitante").value||"Visitante";
   const afLOk=validN(afL)?toF(afL)<1.30:null,afVOk=validN(afV)?toF(afV)<1.30:null;
@@ -316,47 +437,49 @@ function calcGoles(){
   document.getElementById("goles-visit-box").innerHTML=golesBox(visit,afV,ecV,afVOk,ecVOk);
   const promL=validN(afL)&&validN(ecL)?(toF(afL)+toF(ecL))/2:null;
   const promV=validN(afV)&&validN(ecV)?(toF(afV)+toF(ecV))/2:null;
-  const indicWrap=document.getElementById("indicadores-wrap");
+  const iw=document.getElementById("indicadores-wrap");
   if(promL!==null&&promV!==null){
-    indicWrap.classList.remove("hidden");
+    iw.classList.remove("hidden");
     const difProm=Math.abs(promL-promV),difOk=difProm<=0.5;
     const pills=[
-      {ok:difOk,label:`Dif. promedios: ${fmt(difProm)} (≤0.50)`},
-      {ok:afLOk,label:`AF ${local} <1.30`},{ok:afVOk,label:`AF ${visit} <1.30`},
-      {ok:ecLOk,label:`EC ${local} <1.40`},{ok:ecVOk,label:`EC ${visit} <1.40`},
+      {ok:difOk,label:`Dif.prom: ${fmt(difProm)}`},
+      {ok:afLOk,label:`AF ${local}`},{ok:afVOk,label:`AF ${visit}`},
+      {ok:ecLOk,label:`EC ${local}`},{ok:ecVOk,label:`EC ${visit}`},
     ];
     document.getElementById("pills-wrap").innerHTML=pills.filter(p=>p.ok!==null).map(p=>`<span class="pill ${p.ok?"pill-ok":"pill-fail"}">${p.ok?"✅":"⚠"} ${p.label}</span>`).join("");
     const allOk=pills.every(p=>p.ok===true),anyFail=pills.some(p=>p.ok===false);
-    const banner=document.getElementById("range-banner");
-    if(allOk) banner.innerHTML=`<div class="range-banner" style="background:#00e67612;border:1px solid #00e67644;color:#00e676">✅ Todos los rangos cumplen</div>`;
-    else if(anyFail) banner.innerHTML=`<div class="range-banner" style="background:#ff444412;border:1px solid #ff444444;color:#ff4444">⚠ Uno o más criterios no se cumplen</div>`;
-    else banner.innerHTML="";
-  } else indicWrap.classList.add("hidden");
+    document.getElementById("range-banner-wrap").innerHTML=allOk
+      ?`<div class="range-banner" style="background:var(--green-bg);border:1px solid #00e67630;color:var(--green)">✅ Todos los rangos cumplen</div>`
+      :anyFail?`<div class="range-banner" style="background:var(--red-bg);border:1px solid #ff444430;color:var(--red)">⚠ Criterios no cumplen</div>`:"";
+  }else iw.classList.add("hidden");
 }
 
 function calcResultado(){
   const ml=document.getElementById("f-marcLocal").value,mv=document.getElementById("f-marcVisit").value;
   const res=detectRes(ml,mv);
   const pill=document.getElementById("resultado-pill"),box=document.getElementById("score-box");
-  if(res==="Pendiente"&&(ml===""||mv==="")){ pill.classList.add("hidden");box.style.borderColor="#21262d";return;}
+  if(res==="Pendiente"&&(ml===""||mv==="")){ pill.classList.add("hidden");box.style.borderColor="var(--border)";return;}
   pill.classList.remove("hidden");
-  const color=res==="Empate"?"#00e676":res==="No empate"?"#ff4444":"#f5c542";
+  const color=res==="Empate"?"var(--green)":res==="No empate"?"var(--red)":"var(--gold)";
   const label=res==="Empate"?"✅ Empate":res==="No empate"?"❌ No empate":"⏳ Pendiente";
-  pill.textContent=label;pill.style.color=color;pill.style.background=color+"18";pill.style.border=`1px solid ${color}44`;
-  box.style.borderColor=color+"55";
+  pill.textContent=label;
+  pill.style.cssText+=`;color:${color};background:${color}18;border:1px solid ${color}44;`;
+  box.style.borderColor=color;
 }
 
 function handleSubmit(){
   const local=document.getElementById("f-local").value,visitante=document.getElementById("f-visitante").value,liga=document.getElementById("f-liga").value;
   if(!local||!visitante||!liga){alert("Liga, local y visitante son obligatorios");return;}
   const ml=document.getElementById("f-marcLocal").value,mv=document.getElementById("f-marcVisit").value;
-  const resultado=detectRes(ml,mv);
+  const mercados=getMercados();
+  const bankIds=[...document.querySelectorAll('input[name=banksel]:checked')].map(c=>c.value);
   const bet={
-    id:editingId||Date.now(),
+    id:editingId||uid(),
     fecha:document.getElementById("f-fecha").value,
+    hora:document.getElementById("f-hora").value,
     liga,local,visitante,
-    cuotaEmpate:document.getElementById("f-cuotaEmpate").value,
-    cuotaMenos25:document.getElementById("f-cuotaMenos25").value,
+    mercados,
+    cuotaEmpate:mercados[0]?mercados[0].cuota:"",
     formaLocal:document.getElementById("f-formaLocal").value,
     formaVisitante:document.getElementById("f-formaVisitante").value,
     golesAFavorLocal:document.getElementById("f-afLocal").value,
@@ -366,11 +489,12 @@ function handleSubmit(){
     marcadorLocal:ml,marcadorVisitante:mv,
     montoCOP:document.getElementById("f-montoCOP").value,
     unidades:document.getElementById("f-unidades").value||"1",
-    resultado,
+    resultado:detectRes(ml,mv),
+    bankIds,
   };
   if(editingId){bets=bets.map(b=>b.id===editingId?bet:b);editingId=null;}
   else bets.unshift(bet);
-  save();
+  saveBets();
   document.getElementById("submit-btn").textContent="✅ Guardado";
   setTimeout(()=>showView("historial"),700);
 }
@@ -379,11 +503,10 @@ function startEdit(id){
   const bet=bets.find(b=>b.id===id);if(!bet)return;
   editingId=id;showView("nueva");
   document.getElementById("f-fecha").value=bet.fecha||"";
+  document.getElementById("f-hora").value=bet.hora||"";
   document.getElementById("f-liga").value=bet.liga||"";
   document.getElementById("f-local").value=bet.local||"";
   document.getElementById("f-visitante").value=bet.visitante||"";
-  document.getElementById("f-cuotaEmpate").value=bet.cuotaEmpate||"";
-  document.getElementById("f-cuotaMenos25").value=bet.cuotaMenos25||"";
   document.getElementById("f-montoCOP").value=bet.montoCOP||"";
   document.getElementById("f-unidades").value=bet.unidades||"1";
   document.getElementById("f-formaLocal").value=bet.formaLocal||"";
@@ -394,56 +517,137 @@ function startEdit(id){
   document.getElementById("f-ecVisit").value=bet.golesEnContraVisit||"";
   document.getElementById("f-marcLocal").value=bet.marcadorLocal||"";
   document.getElementById("f-marcVisit").value=bet.marcadorVisitante||"";
-  document.getElementById("form-title").textContent="✏ Editando apuesta";
-  document.getElementById("form-title").style.color="#f5c542";
-  document.getElementById("form-wrapper").style.borderColor="#f5c54255";
+  document.getElementById("mercados-wrap").innerHTML="";
+  (bet.mercados&&bet.mercados.length?bet.mercados:[{}]).forEach(m=>addMercado(m));
+  document.getElementById("form-title").textContent="✏ Editando";
+  document.getElementById("form-title").style.color="var(--gold)";
+  document.getElementById("form-wrapper").style.borderColor="var(--gold)55";
   document.getElementById("cancel-edit-btn").classList.remove("hidden");
   document.getElementById("submit-btn").textContent="Actualizar apuesta";
-  document.getElementById("submit-btn").style.background="#f5c542";
+  document.getElementById("submit-btn").style.background="var(--gold)";
+  renderBankSelect();
+  setTimeout(()=>{
+    if(bet.bankIds)bet.bankIds.forEach(bid=>{
+      const cb=document.querySelector(`input[name=banksel][value="${bid}"]`);
+      if(cb)cb.checked=true;
+    });
+  },50);
   updateLabels();calcForma();calcGoles();calcResultado();
 }
-
 function cancelEdit(){editingId=null;resetForm();showView("historial");}
-function deleteBet(id){if(!confirm("¿Eliminar esta apuesta?"))return;bets=bets.filter(b=>b.id!==id);save();renderHistorial();}
+function deleteBet(id){if(!confirm("¿Eliminar?"))return;bets=bets.filter(b=>b.id!==id);saveBets();renderHistorial();}
 
-function openBankModal(){
-  document.getElementById("m-bankCOP").value=config.bankCOP||"";
-  document.getElementById("m-bankU").value=config.bankU||"";
-  document.getElementById("bank-modal").classList.remove("hidden");
+// BANK MODAL
+function openBankModal(mode,bankId){
+  bankModalMode=mode;bankModalId=bankId||null;
+  const modal=document.getElementById("bank-modal");
+  const title=document.getElementById("bank-modal-title");
+  const body=document.getElementById("bank-modal-body");
+  const bank=bankId?banks.find(b=>b.id===bankId):null;
+  if(mode==="create"){
+    title.textContent="Nuevo Bankroll";
+    body.innerHTML=`
+      <div style="margin-bottom:10px"><label>Nombre del bankroll</label><input class="modal-input" id="bm-nombre" placeholder="Ej: Bank Principal" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 12px;font-size:13px;width:100%;outline:none;margin-top:4px" value="${bank?bank.nombre:''}"/></div>
+      <div style="margin-bottom:10px"><label>Bank inicial (COP)</label><input type="number" class="modal-input" id="bm-cop" placeholder="Ej: 500000" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 12px;font-size:13px;width:100%;outline:none;margin-top:4px" value="${bank?bank.initialCOP:''}"/></div>
+      <div style="margin-bottom:10px"><label>Bank inicial (unidades)</label><input type="number" class="modal-input" id="bm-u" placeholder="Ej: 50" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 12px;font-size:13px;width:100%;outline:none;margin-top:4px" value="${bank?bank.initialU:''}"/></div>
+      <div style="margin-bottom:6px"><label style="margin-bottom:8px;display:block">Casas de apuesta (opcional)</label>
+      ${CASAS_CO.map(c=>{
+        const existing=bank&&bank.casas&&bank.casas.find(x=>x.nombre===c);
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <input type="checkbox" id="casa-${c.replace(/\s/g,'')}" value="${c}" ${existing?'checked':''} style="accent-color:var(--accent)">
+          <label for="casa-${c.replace(/\s/g,'')}" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer">${c}</label>
+          ${existing?`<input type="number" id="casa-cop-${c.replace(/\s/g,'')}" placeholder="COP inicial" value="${existing.initialCOP||''}" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 10px;font-size:11px;width:120px;outline:none">`:
+          `<input type="number" id="casa-cop-${c.replace(/\s/g,'')}" placeholder="COP inicial" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 10px;font-size:11px;width:120px;outline:none;display:none">`}
+        </div>`;
+      }).join('')}
+      <script>document.querySelectorAll('[id^="casa-"]').forEach(cb=>{if(cb.type==="checkbox")cb.addEventListener("change",function(){const inp=document.getElementById("casa-cop-"+this.value.replace(/\\s/g,""));if(inp)inp.style.display=this.checked?"inline-block":"none";});});<\/script>
+      </div>`;
+  }
+  modal.classList.remove("hidden");
 }
 function closeBankModal(){document.getElementById("bank-modal").classList.add("hidden");}
-function saveBank(){
-  config.bankCOP=toF(document.getElementById("m-bankCOP").value)||0;
-  config.bankU=toF(document.getElementById("m-bankU").value)||0;
-  config.configured=true;saveConf();closeBankModal();renderDashboard();
+function saveBankModal(){
+  if(bankModalMode==="create"){
+    const nombre=document.getElementById("bm-nombre").value;
+    if(!nombre){alert("Nombre obligatorio");return;}
+    const casas=CASAS_CO.filter(c=>document.getElementById("casa-"+c.replace(/\s/g,""))&&document.getElementById("casa-"+c.replace(/\s/g,"")).checked).map(c=>({
+      nombre:c,
+      initialCOP:toF(document.getElementById("casa-cop-"+c.replace(/\s/g,""))&&document.getElementById("casa-cop-"+c.replace(/\s/g,"")).value)||0,
+      movimientos:[]
+    }));
+    if(bankModalId){
+      banks=banks.map(b=>b.id===bankModalId?{...b,nombre,initialCOP:toF(document.getElementById("bm-cop").value)||0,initialU:toF(document.getElementById("bm-u").value)||0,casas}:b);
+    }else{
+      banks.push({id:uid(),nombre,initialCOP:toF(document.getElementById("bm-cop").value)||0,initialU:toF(document.getElementById("bm-u").value)||0,movimientos:[],casas});
+    }
+    saveBanks();
+  }
+  closeBankModal();renderDashboard();renderBanksDetail();renderBankSelect();
 }
 
+// MOV MODAL
+function openMovModal(bankId,type,casaNombre){
+  movModalBankId=bankId;movModalType=type;
+  const modal=document.getElementById("mov-modal");
+  const title=document.getElementById("mov-modal-title");
+  const body=document.getElementById("mov-modal-body");
+  title.textContent=(type==="recarga"?"💰 Recargar":"💸 Retirar")+(casaNombre?" — "+casaNombre:"");
+  body.innerHTML=`<div><label>Monto (COP)</label><input type="number" id="mov-monto" placeholder="Ej: 50000" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 12px;font-size:13px;width:100%;outline:none;margin-top:4px"/></div>`;
+  modal.dataset.casa=casaNombre||"";
+  modal.classList.remove("hidden");
+}
+function closeMovModal(){document.getElementById("mov-modal").classList.add("hidden");}
+function saveMovModal(){
+  const monto=toF(document.getElementById("mov-monto").value)||0;
+  if(!monto)return;
+  const casaNombre=document.getElementById("mov-modal").dataset.casa;
+  const bank=banks.find(b=>b.id===movModalBankId);
+  if(!bank)return;
+  if(casaNombre){
+    const casa=bank.casas&&bank.casas.find(c=>c.nombre===casaNombre);
+    if(casa){if(!casa.movimientos)casa.movimientos=[];casa.movimientos.push({tipo:movModalType,monto,fecha:new Date().toISOString().split("T")[0]});}
+  }else{
+    if(!bank.movimientos)bank.movimientos=[];
+    bank.movimientos.push({tipo:movModalType,monto,fecha:new Date().toISOString().split("T")[0]});
+  }
+  saveBanks();closeMovModal();renderDashboard();renderBanksDetail();
+}
+function deleteBank(id){if(!confirm("¿Eliminar este bankroll?"))return;banks=banks.filter(b=>b.id!==id);saveBanks();renderDashboard();renderBanksDetail();}
+
+// DASHBOARD
 function renderDashboard(){
   const total=bets.length,emp=bets.filter(b=>b.resultado==="Empate").length;
   const noemp=bets.filter(b=>b.resultado==="No empate").length,pend=bets.filter(b=>b.resultado==="Pendiente").length;
-  const resolved=total-pend,pct=resolved>0?((emp/resolved)*100).toFixed(1):"-";
-  const roiU=bets.reduce((a,b)=>a+gananciaU(b),0),roiCOP=bets.reduce((a,b)=>a+gananciaCOP(b),0);
-  const bankActCOP=(config.bankCOP||0)+roiCOP,bankActU=(config.bankU||0)+roiU;
-  let streak=0;for(const b of bets){if(b.resultado==="Empate")streak++;else if(b.resultado==="No empate")break;else break;}
-
-  document.getElementById("bank-banner").classList.toggle("hidden",config.configured);
-  const bc=document.getElementById("bank-cards"),bel=document.getElementById("bank-edit-link");
-  if(config.configured){
-    bc.classList.remove("hidden");bel.classList.remove("hidden");
-    bc.innerHTML=[
-      {label:"Bank inicial COP",value:formatCOP(config.bankCOP),color:"#8b949e"},
-      {label:"Bank actual COP",value:formatCOP(bankActCOP),color:bankActCOP>=config.bankCOP?"#00e676":"#ff4444"},
-      {label:"Bank inicial (u)",value:config.bankU+"u",color:"#8b949e"},
-      {label:"Bank actual (u)",value:bankActU.toFixed(2)+"u",color:bankActU>=config.bankU?"#00e676":"#ff4444"},
-    ].map(s=>`<div class="kpi"><div class="kpi-label">${s.label}</div><div style="font-size:16px;font-weight:700;color:${s.color}">${s.value}</div></div>`).join("");
-  } else{bc.classList.add("hidden");bel.classList.add("hidden");}
+  const resolved=emp+noemp,pct=resolved>0?((emp/resolved)*100).toFixed(1):"-";
+  const roiU=bets.reduce((a,b)=>a+gananciaU(b),0);
+  let streak=0;for(const b of bets){if(b.resultado==="Empate")streak++;else if(b.resultado!=="Pendiente")break;}
+  document.getElementById("header-stats").textContent=`${total} apuesta${total!==1?"s":""}`;
+  const noBanners=document.getElementById("no-banks-banner");
+  noBanners.classList.toggle("hidden",banks.length>0);
+  const addBtn=document.getElementById("add-bank-btn");
+  addBtn.classList.toggle("hidden",banks.length===0);
+  const banksWrap=document.getElementById("banks-wrap");
+  banksWrap.innerHTML=banks.map(bank=>{
+    const actual=bankActual(bank);
+    const roi=bankROI(bank);
+    const roiPct=bank.initialCOP>0?((actual-bank.initialCOP)/bank.initialCOP*100).toFixed(1):0;
+    return `<div class="bank-card-wrap">
+      <div style="font-size:10px;color:#4a7aaa;text-transform:uppercase;letter-spacing:.1em">${bank.nombre}</div>
+      <div style="font-size:24px;font-weight:700;color:${actual>=bank.initialCOP?"var(--green)":"var(--red)"};margin:4px 0">${fCOP(actual)}</div>
+      <div style="font-size:11px;color:var(--muted)"><span style="color:${roi>=0?"var(--green)":"var(--red)"}">${roi>=0?"+":""}${fCOP(roi)}</span> (${roiPct}%)</div>
+      <div class="bank-actions">
+        <button class="bank-btn" onclick="openMovModal('${bank.id}','recarga')">💰 Recargar</button>
+        <button class="bank-btn" onclick="openMovModal('${bank.id}','retiro')">💸 Retirar</button>
+        <button class="bank-btn" onclick="openBankModal('create','${bank.id}')">⚙ Editar</button>
+      </div>
+    </div>`;
+  }).join('');
 
   document.getElementById("kpi-grid").innerHTML=[
-    {label:"Total apuestas",value:total,color:"#e6edf3"},
-    {label:"% Acierto",value:pct!=="-"?pct+"%":"-",color:parseFloat(pct)>=50?"#00e676":"#ff4444"},
-    {label:"ROI (u)",value:(roiU>=0?"+":"")+roiU.toFixed(2)+"u",color:roiU>=0?"#00e676":"#ff4444"},
-    {label:"ROI (COP)",value:(roiCOP>=0?"+":"")+formatCOP(roiCOP),color:roiCOP>=0?"#00e676":"#ff4444"},
-    {label:"Racha",value:streak>0?"🔥 "+streak:"-",color:"#f5c542"},
+    {label:"Total",value:total,color:"var(--text)"},
+    {label:"% Acierto",value:pct!=="-"?pct+"%":"-",color:parseFloat(pct)>=50?"var(--green)":"var(--red)"},
+    {label:"ROI (u)",value:(roiU>=0?"+":"")+roiU.toFixed(2)+"u",color:roiU>=0?"var(--green)":"var(--red)"},
+    {label:"Racha",value:streak>0?"🔥 "+streak:"-",color:"var(--gold)"},
   ].map(s=>`<div class="kpi"><div class="kpi-label">${s.label}</div><div class="kpi-value" style="color:${s.color}">${s.value||"0"}</div></div>`).join("");
 
   document.getElementById("d-emp").textContent=emp;
@@ -456,15 +660,13 @@ function renderDashboard(){
   }
   document.getElementById("empty-msg").classList.toggle("hidden",total>0);
 
-  // Liga stats
   const ligaMap={};
   for(const b of bets){
-    if(!b.liga)continue;
-    if(!ligaMap[b.liga])ligaMap[b.liga]={liga:b.liga,total:0,emp:0,noemp:0,pend:0,roiU:0,roiCOP:0};
-    ligaMap[b.liga].total++;
-    if(b.resultado==="Empate"){ligaMap[b.liga].emp++;ligaMap[b.liga].roiU+=gananciaU(b);ligaMap[b.liga].roiCOP+=gananciaCOP(b);}
-    else if(b.resultado==="No empate"){ligaMap[b.liga].noemp++;ligaMap[b.liga].roiU+=gananciaU(b);ligaMap[b.liga].roiCOP+=gananciaCOP(b);}
-    else ligaMap[b.liga].pend++;
+    const key=(b.liga||"Sin liga").trim().toLowerCase();
+    if(!ligaMap[key])ligaMap[key]={liga:(b.liga||"Sin liga").trim(),total:0,emp:0,noemp:0,roiU:0};
+    ligaMap[key].total++;
+    if(b.resultado==="Empate"){ligaMap[key].emp++;ligaMap[key].roiU+=gananciaU(b);}
+    else if(b.resultado==="No empate"){ligaMap[key].noemp++;ligaMap[key].roiU+=gananciaU(b);}
   }
   const ligas=Object.values(ligaMap).sort((a,b)=>b.total-a.total);
   const ligaCard=document.getElementById("liga-card");
@@ -472,29 +674,20 @@ function renderDashboard(){
     ligaCard.classList.remove("hidden");
     document.getElementById("liga-tbody").innerHTML=ligas.map(ls=>{
       const res=ls.emp+ls.noemp,pct=res>0?((ls.emp/res)*100).toFixed(0)+"%":"-";
-      return `<tr style="border-bottom:1px solid #21262d">
-        <td>${ls.liga}</td><td>${ls.total}</td>
-        <td style="color:#00e676;font-weight:700">${ls.emp}</td>
-        <td style="color:#ff4444;font-weight:700">${ls.noemp}</td>
-        <td style="color:#f5c542">${ls.pend}</td>
-        <td style="color:${pct==="-"?"#8b949e":parseFloat(pct)>=50?"#00e676":"#ff4444"};font-weight:700">${pct}</td>
-        <td style="color:${ls.roiU>=0?"#00e676":"#ff4444"};font-weight:700">${ls.roiU>=0?"+":""}${ls.roiU.toFixed(2)}u</td>
-        <td style="color:${ls.roiCOP>=0?"#00e676":"#ff4444"};font-weight:700">${ls.roiCOP>=0?"+":""}${formatCOP(ls.roiCOP)}</td>
-      </tr>`;
+      return `<tr><td>${ls.liga}</td><td>${ls.total}</td><td style="color:var(--green)">${ls.emp}</td><td style="color:var(--red)">${ls.noemp}</td><td style="color:${parseFloat(pct)>=50?"var(--green)":"var(--red)"}">${pct}</td><td style="color:${ls.roiU>=0?"var(--green)":"var(--red)"}">${ls.roiU>=0?"+":""}${ls.roiU.toFixed(2)}u</td></tr>`;
     }).join("");
-  } else ligaCard.classList.add("hidden");
+  }else ligaCard.classList.add("hidden");
 
-  // Equipo stats
   const eqMap={};
   for(const b of bets){
     [b.local,b.visitante].forEach(eq=>{
       if(!eq)return;
-      if(!eqMap[eq])eqMap[eq]={eq,total:0,emp:0,noemp:0,pend:0,roiU:0};
-      eqMap[eq].total++;
+      const key=eq.trim().toLowerCase();
+      if(!eqMap[key])eqMap[key]={eq:eq.trim(),total:0,emp:0,noemp:0,roiU:0};
+      eqMap[key].total++;
       const gu=gananciaU(b)/2;
-      if(b.resultado==="Empate"){eqMap[eq].emp++;eqMap[eq].roiU+=gu;}
-      else if(b.resultado==="No empate"){eqMap[eq].noemp++;eqMap[eq].roiU+=gu;}
-      else eqMap[eq].pend++;
+      if(b.resultado==="Empate"){eqMap[key].emp++;eqMap[key].roiU+=gu;}
+      else if(b.resultado==="No empate"){eqMap[key].noemp++;eqMap[key].roiU+=gu;}
     });
   }
   const equipos=Object.values(eqMap).sort((a,b)=>b.total-a.total);
@@ -503,135 +696,118 @@ function renderDashboard(){
     eqCard.classList.remove("hidden");
     document.getElementById("equipo-tbody").innerHTML=equipos.map(eq=>{
       const res=eq.emp+eq.noemp,pct=res>0?((eq.emp/res)*100).toFixed(0)+"%":"-";
-      return `<tr style="border-bottom:1px solid #21262d">
-        <td>${eq.eq}</td><td>${eq.total}</td>
-        <td style="color:#00e676;font-weight:700">${eq.emp}</td>
-        <td style="color:#ff4444;font-weight:700">${eq.noemp}</td>
-        <td style="color:#f5c542">${eq.pend}</td>
-        <td style="color:${pct==="-"?"#8b949e":parseFloat(pct)>=50?"#00e676":"#ff4444"};font-weight:700">${pct}</td>
-        <td style="color:${eq.roiU>=0?"#00e676":"#ff4444"};font-weight:700">${eq.roiU>=0?"+":""}${eq.roiU.toFixed(2)}u</td>
-      </tr>`;
+      return `<tr><td>${eq.eq}</td><td>${eq.total}</td><td style="color:var(--green)">${eq.emp}</td><td style="color:var(--red)">${eq.noemp}</td><td style="color:${parseFloat(pct)>=50?"var(--green)":"var(--red)"}">${pct}</td><td style="color:${eq.roiU>=0?"var(--green)":"var(--red)"}">${eq.roiU>=0?"+":""}${eq.roiU.toFixed(2)}u</td></tr>`;
     }).join("");
-  } else eqCard.classList.add("hidden");
+  }else eqCard.classList.add("hidden");
 }
 
+// HISTORIAL
 function renderHistorial(){
+  const filterBank=document.getElementById("hist-filter-bank");
+  const sel=filterBank.value;
+  const opts=banks.map(b=>`<option value="${b.id}" ${sel===b.id?"selected":""}>${b.nombre}</option>`).join("");
+  filterBank.innerHTML=`<option value="">Todos los banks</option>${opts}`;
+  filterBank.value=sel;
+
+  const filtered=sel?bets.filter(b=>b.bankIds&&b.bankIds.includes(sel)):bets;
   const list=document.getElementById("hist-list"),empty=document.getElementById("hist-empty");
-  const count=document.getElementById("hist-count");
-  count.textContent=bets.length+" apuesta"+(bets.length!==1?"s":"")+" registrada"+(bets.length!==1?"s":"");
-  if(bets.length===0){list.innerHTML="";empty.classList.remove("hidden");return;}
+  document.getElementById("hist-count").textContent=filtered.length+" apuesta"+(filtered.length!==1?"s":"");
+  if(filtered.length===0){list.innerHTML="";empty.classList.remove("hidden");return;}
   empty.classList.add("hidden");
-  list.innerHTML=bets.map(bet=>{
+  list.innerHTML=filtered.map(bet=>{
     const gu=gananciaU(bet),gc=gananciaCOP(bet);
     const isPend=bet.resultado==="Pendiente",isEmp=bet.resultado==="Empate";
-    const sc=isPend?"#f5c542":isEmp?"#00e676":"#ff4444";
-    const hasMark=bet.marcadorLocal!==""&&bet.marcadorVisitante!=="";
+    const sc=isPend?"var(--gold)":isEmp?"var(--green)":"var(--red)";
+    const hasMark=validN(bet.marcadorLocal)&&validN(bet.marcadorVisitante);
     const dfBet=validN(bet.formaLocal)&&validN(bet.formaVisitante)?Math.abs(toF(bet.formaLocal)-toF(bet.formaVisitante)):null;
-    const tgl=(toF(bet.golesAFavorLocal)||0)+(toF(bet.golesEnContraLocal)||0);
-    const tgv=(toF(bet.golesAFavorVisit)||0)+(toF(bet.golesEnContraVisit)||0);
-    return `<div class="bet-card" style="border-left:3px solid ${sc}">
+    const promL=validN(bet.golesAFavorLocal)&&validN(bet.golesEnContraLocal)?(toF(bet.golesAFavorLocal)+toF(bet.golesEnContraLocal))/2:null;
+    const promV=validN(bet.golesAFavorVisit)&&validN(bet.golesEnContraVisit)?(toF(bet.golesAFavorVisit)+toF(bet.golesEnContraVisit))/2:null;
+    const difProm=promL!==null&&promV!==null?Math.abs(promL-promV):null;
+    const bankNames=bet.bankIds&&bet.bankIds.length?bet.bankIds.map(id=>{const b=banks.find(x=>x.id===id);return b?b.nombre:""}).filter(Boolean).join(", "):"";
+    const mercadosList=bet.mercados&&bet.mercados.length?bet.mercados:bet.cuotaEmpate?[{nombre:"Empate",cuota:bet.cuotaEmpate}]:[];
+    return `<div class="bet-card" style="border-left-color:${sc}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <div style="font-size:13px;font-weight:700">${bet.local} vs ${bet.visitante}</div>
-            ${hasMark?`<div class="tag" style="background:${sc}18;border:1px solid ${sc}44;color:${sc}">${bet.marcadorLocal} — ${bet.marcadorVisitante}</div>`:""}
+            ${hasMark?`<div class="tag" style="background:${sc}18;border:1px solid ${sc}44;color:${sc}">${bet.marcadorLocal}–${bet.marcadorVisitante}</div>`:""}
           </div>
-          <div style="font-size:10px;color:#8b949e;margin-top:3px">${bet.liga} · ${bet.fecha}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px">${bet.liga}${bet.hora?" · "+bet.hora:""} · ${bet.fecha}</div>
+          ${bankNames?`<div style="font-size:10px;color:var(--accent);margin-top:2px">🏦 ${bankNames}</div>`:""}
         </div>
         <div style="display:flex;align-items:center;gap:6px;margin-left:8px">
           <div style="text-align:right">
             <div style="font-size:11px;font-weight:700;color:${sc}">${bet.resultado}</div>
-            ${!isPend?`<div style="font-size:10px;color:${gu>=0?"#00e676":"#ff4444"}">${gu>=0?"+":""}${gu}u</div>${bet.montoCOP?`<div style="font-size:10px;color:${gc>=0?"#00e676":"#ff4444"}">${gc>=0?"+":""}${formatCOP(gc)}</div>`:""}`:""}</div>
-          <button class="edit-btn" onclick="startEdit(${bet.id})" style="background:#58a6ff18;border:1px solid #58a6ff44;color:#58a6ff">✏</button>
-          <button class="del-btn" onclick="deleteBet(${bet.id})">✕</button>
+            ${!isPend?`<div style="font-size:10px;color:${gu>=0?"var(--green)":"var(--red)"}">${gu>=0?"+":""}${gu}u</div><div style="font-size:10px;color:${gc>=0?"var(--green)":"var(--red)"}">${gc>=0?"+":""}${fCOP(gc)}</div>`:""}</div>
+          <button class="edit-btn" onclick="startEdit('${bet.id}')">✏</button>
+          <button class="del-btn" onclick="deleteBet('${bet.id}')">✕</button>
         </div>
       </div>
-      <div class="grid3" style="margin-top:10px;color:#8b949e">
-        <div>Cuota emp.: <span style="color:#e6edf3">${bet.cuotaEmpate||"-"}</span></div>
-        <div>Menos 2.5: <span style="color:#e6edf3">${bet.cuotaMenos25||"-"}</span></div>
-        <div>Dif. forma: <span style="color:${dfBet!==null?(dfBet<=0.5?"#00e676":"#ff4444"):"#e6edf3"}">${dfBet!==null?fmt(dfBet):"-"}</span></div>
-        <div>AF local: <span style="color:#00e676">${bet.golesAFavorLocal||"-"}</span></div>
-        <div>EC local: <span style="color:#ff4444">${bet.golesEnContraLocal||"-"}</span></div>
-        <div>Total local: <span style="color:#58a6ff">${bet.golesAFavorLocal&&bet.golesEnContraLocal?fmt(tgl):"-"}</span></div>
-        <div>AF visit.: <span style="color:#00e676">${bet.golesAFavorVisit||"-"}</span></div>
-        <div>EC visit.: <span style="color:#ff4444">${bet.golesEnContraVisit||"-"}</span></div>
-        <div>Total visit.: <span style="color:#58a6ff">${bet.golesAFavorVisit&&bet.golesEnContraVisit?fmt(tgv):"-"}</span></div>
-        ${bet.montoCOP?`<div>Monto: <span style="color:#e6edf3">${formatCOP(parseFloat(bet.montoCOP))}</span></div>`:""}
+      <div class="hist-detail">
+        <div class="hist-detail-grid">
+          ${mercadosList.map(m=>`<div class="hist-detail-item"><span class="hist-detail-label">${m.nombre}</span><span class="hist-detail-value" style="color:var(--accent)">${m.cuota||"-"}</span></div>`).join("")}
+          <div class="hist-detail-item"><span class="hist-detail-label">Dif. forma</span><span class="hist-detail-value" style="color:${dfBet!==null?(dfBet<=0.5?"var(--green)":"var(--red)"):"var(--text)"}">${dfBet!==null?fmt(dfBet):"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">Forma L</span><span class="hist-detail-value">${bet.formaLocal||"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">Forma V</span><span class="hist-detail-value">${bet.formaVisitante||"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">AF Local</span><span class="hist-detail-value" style="color:var(--green)">${bet.golesAFavorLocal||"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">EC Local</span><span class="hist-detail-value" style="color:var(--red)">${bet.golesEnContraLocal||"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">Prom L</span><span class="hist-detail-value" style="color:var(--accent)">${promL!==null?fmt(promL):"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">AF Visit</span><span class="hist-detail-value" style="color:var(--green)">${bet.golesAFavorVisit||"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">EC Visit</span><span class="hist-detail-value" style="color:var(--red)">${bet.golesEnContraVisit||"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">Prom V</span><span class="hist-detail-value" style="color:var(--accent)">${promV!==null?fmt(promV):"-"}</span></div>
+          <div class="hist-detail-item"><span class="hist-detail-label">Dif. prom</span><span class="hist-detail-value" style="color:${difProm!==null?(difProm<=0.5?"var(--green)":"var(--red)"):"var(--text)"}">${difProm!==null?fmt(difProm):"-"}</span></div>
+          ${bet.montoCOP?`<div class="hist-detail-item"><span class="hist-detail-label">Monto</span><span class="hist-detail-value">${fCOP(parseFloat(bet.montoCOP))}</span></div>`:""}
+          <div class="hist-detail-item"><span class="hist-detail-label">Unidades</span><span class="hist-detail-value">${bet.unidades||"1"}u</span></div>
+        </div>
       </div>
     </div>`;
   }).join("");
 }
 
-function setChartPeriod(p){
-  chartPeriod=p;
-  document.querySelectorAll(".tab-btn").forEach((b,i)=>{
-    b.classList.toggle("active",["diario","semanal","mensual","anual"][i]===p);
-  });
-  renderGraficos();
-}
-
-function getPeriodKey(fecha,period){
-  if(!fecha)return"Sin fecha";
-  const d=new Date(fecha);
-  if(period==="diario")return fecha;
-  if(period==="semanal"){
-    const jan=new Date(d.getFullYear(),0,1);
-    const week=Math.ceil(((d-jan)/86400000+jan.getDay()+1)/7);
-    return `${d.getFullYear()}-S${week}`;
-  }
-  if(period==="mensual"){
-    const m=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    return `${m[d.getMonth()]} ${d.getFullYear()}`;
-  }
-  if(period==="anual")return String(d.getFullYear());
-  return fecha;
-}
-
-function renderGraficos(){
-  const resolved=bets.filter(b=>b.resultado!=="Pendiente");
-  if(resolved.length===0){
-    document.getElementById("no-data-msg").classList.remove("hidden");
-    return;
-  }
-  document.getElementById("no-data-msg").classList.add("hidden");
-
-  const sorted=[...resolved].sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
-  const periodMap={};
-  sorted.forEach(b=>{
-    const k=getPeriodKey(b.fecha,chartPeriod);
-    if(!periodMap[k])periodMap[k]={emp:0,noemp:0,roiU:0};
-    if(b.resultado==="Empate")periodMap[k].emp++;
-    else periodMap[k].noemp++;
-    periodMap[k].roiU+=gananciaU(b);
-  });
-  const labels=Object.keys(periodMap);
-  const roiAcum=[],empArr=[],noempArr=[];
-  let acum=0;
-  labels.forEach(k=>{
-    acum+=periodMap[k].roiU;
-    roiAcum.push(parseFloat(acum.toFixed(2)));
-    empArr.push(periodMap[k].emp);
-    noempArr.push(periodMap[k].noemp);
-  });
-
-  const cfg={responsive:true,plugins:{legend:{labels:{color:"#8b949e",font:{size:11}}},tooltip:{backgroundColor:"#161b22",titleColor:"#e6edf3",bodyColor:"#8b949e",borderColor:"#21262d",borderWidth:1}},scales:{x:{ticks:{color:"#8b949e",font:{size:10}},grid:{color:"#21262d"}},y:{ticks:{color:"#8b949e",font:{size:10}},grid:{color:"#21262d"}}}};
-
-  if(roiChart)roiChart.destroy();
-  roiChart=new Chart(document.getElementById("chart-roi"),{
-    type:"line",
-    data:{labels,datasets:[{label:"ROI acumulado (u)",data:roiAcum,borderColor:"#58a6ff",backgroundColor:"#58a6ff22",tension:0.3,fill:true,pointBackgroundColor:"#58a6ff"}]},
-    options:{...cfg}
-  });
-
-  if(resultsChart)resultsChart.destroy();
-  resultsChart=new Chart(document.getElementById("chart-results"),{
-    type:"bar",
-    data:{labels,datasets:[
-      {label:"Empates ✅",data:empArr,backgroundColor:"#00e67666",borderColor:"#00e676",borderWidth:1},
-      {label:"No empate ❌",data:noempArr,backgroundColor:"#ff444466",borderColor:"#ff4444",borderWidth:1},
-    ]},
-    options:{...cfg,scales:{...cfg.scales,x:{...cfg.scales.x,stacked:false},y:{...cfg.scales.y,stacked:false}}}
-  });
+// BANKS DETAIL
+function renderBanksDetail(){
+  const wrap=document.getElementById("banks-detail-wrap");
+  if(banks.length===0){wrap.innerHTML='<div style="text-align:center;color:var(--muted);padding:30px 0;font-size:13px">Sin bankrolls. Crea uno abajo.</div>';return;}
+  wrap.innerHTML=banks.map(bank=>{
+    const actual=bankActual(bank);
+    const roi=bankROI(bank);
+    const betsBanco=bets.filter(b=>b.bankIds&&b.bankIds.includes(bank.id));
+    const casasHtml=(bank.casas&&bank.casas.length)?`
+      <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Casas de apuesta</div>
+        ${bank.casas.map(c=>{
+          const act=bankSubActual(bank,c.nombre);
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)11">
+            <span style="font-size:12px;font-weight:600">${c.nombre}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:${act>=(c.initialCOP||0)?"var(--green)":"var(--red)"}">${fCOP(act)}</span>
+              <button onclick="openMovModal('${bank.id}','recarga','${c.nombre}')" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:10px;cursor:pointer">+</button>
+              <button onclick="openMovModal('${bank.id}','retiro','${c.nombre}')" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:10px;cursor:pointer">-</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`:""
+    ;
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${bank.nombre}</div>
+          <div style="font-size:22px;font-weight:700;color:${actual>=(bank.initialCOP||0)?"var(--green)":"var(--red)"};margin:4px 0">${fCOP(actual)}</div>
+          <div style="font-size:11px;color:var(--muted)">Inicial: ${fCOP(bank.initialCOP||0)} · ROI: <span style="color:${roi>=0?"var(--green)":"var(--red)"}">${roi>=0?"+":""}${fCOP(roi)}</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${betsBanco.length} apuesta${betsBanco.length!==1?"s":""}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="openBankModal('create','${bank.id}')" class="del-btn">✏</button>
+          <button onclick="deleteBank('${bank.id}')" class="del-btn">✕</button>
+        </div>
+      </div>
+      <div class="bank-actions">
+        <button class="bank-btn" onclick="openMovModal('${bank.id}','recarga')">💰 Recargar</button>
+        <button class="bank-btn" onclick="openMovModal('${bank.id}','retiro')">💸 Retirar</button>
+      </div>
+      ${casasHtml}
+    </div>`;
+  }).join('');
 }
 
 load();renderDashboard();
